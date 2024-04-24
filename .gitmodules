@@ -1,0 +1,6 @@
+[submodule "deps/Chipmunk2D"]
+	path = deps/Chipmunk2D
+	url = https://github.com/slembcke/Chipmunk2D.git
+[submodule "deps/uthash"]
+	path = deps/uthash
+	url = https://github.com/troydhanson/uthash.git

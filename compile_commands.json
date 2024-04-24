@@ -1,0 +1,42 @@
+[
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-std=c2x",
+      "-O3",
+      "-I./include",
+      "-I./deps/Chipmunk2D/include/chipmunk",
+      "-I./deps/uthash/include",
+      "-fopenmp",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-c",
+      "-o",
+      "src/main.o",
+      "src/main.c"
+    ],
+    "directory": "/Users/huangyanxing/Desktop/docs/Developer/cubicwar",
+    "file": "/Users/huangyanxing/Desktop/docs/Developer/cubicwar/src/main.c",
+    "output": "/Users/huangyanxing/Desktop/docs/Developer/cubicwar/src/main.o"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "-std=c2x",
+      "-O3",
+      "-I./include",
+      "-I./deps/Chipmunk2D/include/chipmunk",
+      "-I./deps/uthash/include",
+      "-fopenmp",
+      "-I/opt/homebrew/include/SDL2",
+      "-D_THREAD_SAFE",
+      "-c",
+      "-o",
+      "src/utils.o",
+      "src/utils.c"
+    ],
+    "directory": "/Users/huangyanxing/Desktop/docs/Developer/cubicwar",
+    "file": "/Users/huangyanxing/Desktop/docs/Developer/cubicwar/src/utils.c",
+    "output": "/Users/huangyanxing/Desktop/docs/Developer/cubicwar/src/utils.o"
+  }
+]
