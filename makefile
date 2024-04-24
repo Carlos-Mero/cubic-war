@@ -13,7 +13,7 @@ $(target): $(OBJECTS)
 	$(CC) $(cflags) $(ldflags) -o $@ $(OBJECTS) $(libs)
 
 %.o: %.c
-	$(CC) $(cflags) -c $< -o $@ $(sdl2-config --cflags --libs)
+	$(CC) $(cflags) -c $< -o $@
 
 clean: 
 	rm -f $(OBJECTS) $(target)

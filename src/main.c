@@ -1,19 +1,7 @@
-#include <stdio.h>
-#include <omp.h>
 #include <SDL.h>
 #include <chipmunk.h>
 
-#include "utils.h"
-
-void calc_test() {
-    int sum = 0;
-    #pragma omp parallel for
-    for (int i = 0; i < 1000; i++) {
-        sum++;
-    }
-    printf("The final sum is: %d\n", sum);
-    printf("Which is expected to be: %d\n", 1000);
-}
+#include "app.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
