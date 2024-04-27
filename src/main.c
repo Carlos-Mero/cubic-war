@@ -20,7 +20,7 @@ void main_loop() {
 
 int main(int argc, char** argv) {
 
-    if (init_sdllib() < 0) {goto END_CLEANUP;}
+    if (app_init() < 0) {goto END_CLEANUP;}
 
     #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop_arg(main_loop, nullptr, -1, 1)
@@ -29,6 +29,6 @@ int main(int argc, char** argv) {
     #endif
 
 END_CLEANUP:
-    cleanup_globals();
+    final_cleanup();
     return 0;
 }

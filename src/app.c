@@ -1,6 +1,9 @@
 #include "app.h"
 
-#include <pthread.h>
+#include <SDL.h>
+#include <chipmunk.h>
+
+#include "player.h"
 
 // global objects
 App app = {
@@ -9,11 +12,18 @@ App app = {
     .rr = nullptr,
     .screen = nullptr,
     .window_size = {0, 0, 800, 480},
-    .DPI_SCALE = 0.0
+    .DPI_SCALE = 0.0f,
+    .rtime = 0,
+
+    .space = nullptr,
+
+    .player = nullptr,
 };
+
 const SDL_Color main_bkg_color = {0xbd, 0xd0, 0xf1, 0xff};
 
-int init_sdllib() {
+int app_init() {
+    // initialize SDL lib
     if (SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO) < 0) {
         printf("SDL2 failed to initialize: %s\n", SDL_GetError());
         goto ON_FAIL;
@@ -28,12 +38,26 @@ int init_sdllib() {
     SDL_GetWindowSize(app.window, &logical_width, nullptr);
     app.DPI_SCALE = (double)app.window_size.w / (double)logical_width;
 
+    // initialize chipmunk
+    app.space = cpSpaceNew();
+
+    // initialize objects
+    app.player = player_init();
+
+    // initialize timer
+    app.rtime = SDL_GetPerformanceCounter();
+
+    // returns the result
     return 0;
 ON_FAIL:
     return -1;
 }
 
 void main_process() {
+    uint64_t ntime = SDL_GetPerformanceCounter();
+    double delta = (double)(ntime - app.rtime) / (double)SDL_GetPerformanceFrequency();
+    app.rtime = ntime;
+
     while (SDL_PollEvent(&app.event)) {
         switch(app.event.type) {
             case (SDL_QUIT):
@@ -44,14 +68,15 @@ void main_process() {
                 break;
         }
     }
-    pthread_create(&app.render_thread, NULL, main_render_process, NULL);
 
     // process following objects
+    _process_player(app.player, delta);
 
-    pthread_join(app.render_thread, NULL);
+    // render objects
+    main_render_process();
 }
 
-void* main_render_process(void*) {
+void main_render_process() {
     SDL_SetRenderTarget(app.rr, NULL);
     SDL_SetRenderDrawColor(app.rr,
                            main_bkg_color.r,
@@ -60,11 +85,21 @@ void* main_render_process(void*) {
                            main_bkg_color.a);
     SDL_RenderClear(app.rr);
 
+    // render subsequent objects
+    _render_player(app.player);
+
+    // Final render present
     SDL_RenderPresent(app.rr);
-    return nullptr;
 }
 
-void cleanup_globals() {
+void final_cleanup() {
+    // cleanup chipmunk
+    cpSpaceFree(app.space);
+
+    // collect objects
+    player_collect(app.player);
+    
+    // exit SDL
     SDL_DestroyTexture(app.screen);
     SDL_DestroyRenderer(app.rr);
     SDL_DestroyWindow(app.window);
