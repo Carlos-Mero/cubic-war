@@ -51,7 +51,6 @@ void _process_player(Player* player, double delta) {
     player->speed = cpvclamp(player->speed, player_max_speed);
     
     player->pos = cpvadd(player->pos, cpvmult(player->speed, delta));
-    printf("Current speed: %f\n Current delta: %f", cpvlength(player->speed), delta);
 }
 
 void _render_player(Player* player) {

@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <chipmunk.h>
+#include <time.h>
 
 #include "player.h"
 
@@ -12,8 +13,8 @@ App app = {
     .rr = nullptr,
     .screen = nullptr,
     .window_size = {0, 0, 800, 480},
-    .DPI_SCALE = 0.0f,
-    .rtime = 0,
+    .DPI_SCALE = 0.0,
+    .rtime = {.tv_sec = 0, .tv_nsec = 0},
 
     .space = nullptr,
 
@@ -45,7 +46,7 @@ int app_init() {
     app.player = player_init();
 
     // initialize timer
-    app.rtime = SDL_GetPerformanceCounter();
+    timespec_get(&app.rtime, TIME_UTC);
 
     // returns the result
     return 0;
@@ -54,8 +55,9 @@ ON_FAIL:
 }
 
 void main_process() {
-    uint64_t ntime = SDL_GetPerformanceCounter();
-    double delta = (double)(ntime - app.rtime) / (double)SDL_GetPerformanceFrequency();
+    struct timespec ntime;
+    timespec_get(&ntime, TIME_UTC);
+    double delta = (double)(ntime.tv_sec - app.rtime.tv_sec) + (double)(ntime.tv_nsec - app.rtime.tv_nsec) * 1e-9;
     app.rtime = ntime;
 
     while (SDL_PollEvent(&app.event)) {

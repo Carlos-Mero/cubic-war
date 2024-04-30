@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <SDL.h>
 #include <chipmunk.h>
+#include <time.h>
 
 #include "player.h"
 
@@ -14,7 +15,7 @@ typedef struct App {
     SDL_Rect window_size;
     double DPI_SCALE;
     SDL_Event event;
-    uint64_t rtime;
+    struct timespec rtime;
 
     // Chipmunk
     cpSpace* space;
