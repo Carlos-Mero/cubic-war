@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "player.h"
+#include "bullets.h"
 
 // global objects
 App app = {
@@ -21,7 +22,7 @@ App app = {
     .player = nullptr,
 };
 
-const SDL_Color main_bkg_color = {0xbd, 0xd0, 0xf1, 0xff};
+static const SDL_Color main_bkg_color = {0xbd, 0xd0, 0xf1, 0xff};
 
 int app_init() {
     // initialize SDL lib
@@ -35,15 +36,16 @@ int app_init() {
                                   SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
     app.rr = SDL_CreateRenderer(app.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     SDL_SetRenderDrawBlendMode(app.rr, SDL_BLENDMODE_BLEND);
-    int logical_width;
-    SDL_GetWindowSize(app.window, &logical_width, nullptr);
-    app.DPI_SCALE = (double)app.window_size.w / (double)logical_width;
+    int actual_width;
+    SDL_GetRendererOutputSize(app.rr, &actual_width, nullptr);
+    app.DPI_SCALE = (double)actual_width / (double)app.window_size.w;
 
     // initialize chipmunk
     app.space = cpSpaceNew();
 
     // initialize objects
     app.player = player_init();
+    bullets_init();
 
     // initialize timer
     timespec_get(&app.rtime, TIME_UTC);
@@ -54,12 +56,37 @@ ON_FAIL:
     return -1;
 }
 
-void main_process() {
-    struct timespec ntime;
-    timespec_get(&ntime, TIME_UTC);
-    double delta = (double)(ntime.tv_sec - app.rtime.tv_sec) + (double)(ntime.tv_nsec - app.rtime.tv_nsec) * 1e-9;
-    app.rtime = ntime;
+static void render_callback(cpBody* body, void* data) {
+    auto obj = (object*)(cpBodyGetUserData(body));
+    if (obj->_render) {
+        obj->_render(obj);
+    }
+}
 
+static void main_render_process() {
+    SDL_SetRenderTarget(app.rr, NULL);
+    SDL_SetRenderDrawColor(app.rr,
+                           main_bkg_color.r,
+                           main_bkg_color.g,
+                           main_bkg_color.b,
+                           main_bkg_color.a);
+    SDL_RenderClear(app.rr);
+
+    // render subsequent objects
+    cpSpaceEachBody(app.space, render_callback, nullptr);
+
+    // Final render present
+    SDL_RenderPresent(app.rr);
+}
+
+static void process_callback(cpBody* body, void* delta) {
+    auto obj = (object*)(cpBodyGetUserData(body));
+    if (obj->_process) {
+        obj->_process(obj, *(double*)delta);
+    }
+}
+
+static void input_handling() {
     while (SDL_PollEvent(&app.event)) {
         switch(app.event.type) {
             case (SDL_QUIT):
@@ -70,36 +97,43 @@ void main_process() {
                 break;
         }
     }
+    return;
+}
+
+void main_process() {
+    struct timespec ntime;
+    timespec_get(&ntime, TIME_UTC);
+    double delta = (double)(ntime.tv_sec - app.rtime.tv_sec) + (double)(ntime.tv_nsec - app.rtime.tv_nsec) * 1e-9;
+    app.rtime = ntime;
+
+    input_handling();
 
     // process following objects
-    _process_player(app.player, delta);
+    cpSpaceEachBody(app.space, process_callback, &delta);
+
+    // Physical Steps
+    cpSpaceStep(app.space, delta);
 
     // render objects
     main_render_process();
 }
 
-void main_render_process() {
-    SDL_SetRenderTarget(app.rr, NULL);
-    SDL_SetRenderDrawColor(app.rr,
-                           main_bkg_color.r,
-                           main_bkg_color.g,
-                           main_bkg_color.b,
-                           main_bkg_color.a);
-    SDL_RenderClear(app.rr);
-
-    // render subsequent objects
-    _render_player(app.player);
-
-    // Final render present
-    SDL_RenderPresent(app.rr);
+static void cleanup_callback(cpBody* body, void* data) {
+    auto obj = (object*)(cpBodyGetUserData(body));
+    if (obj->_free) {
+        cpSpaceAddPostStepCallback(app.space, obj->_free, obj, nullptr);
+    }
 }
 
 void final_cleanup() {
+    // collect objects
+    cpSpaceEachBody(app.space, cleanup_callback, nullptr);
+
+    // deinit globals
+    bullets_deinit();
+
     // cleanup chipmunk
     cpSpaceFree(app.space);
-
-    // collect objects
-    player_collect(app.player);
     
     // exit SDL
     SDL_DestroyTexture(app.screen);

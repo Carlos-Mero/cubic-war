@@ -30,8 +30,4 @@ extern App app;
 int app_init();
 
 void main_process();
-void main_render_process();
 void final_cleanup();
-
-// Constants
-extern const SDL_Color main_bkg_color;
