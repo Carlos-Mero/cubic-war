@@ -6,7 +6,7 @@
 #include "utils.h"
 
 typedef struct Player {
-    object base;
+    OBJECT;
 
     cpBody* kbody;
     cpShape* coli_shape;

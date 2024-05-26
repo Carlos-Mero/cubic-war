@@ -16,9 +16,9 @@ const float default_weapon_colddown = 0.16;
 
 Player* player_init() {
     Player* player = malloc(sizeof(Player));
-    player->base._process = _process_player;
-    player->base._render = _render_player;
-    player->base._free = _player_free;
+    player->_process = _process_player;
+    player->_render = _render_player;
+    player->_free = _player_free;
     int xx; int yy;
     SDL_GetRendererOutputSize(app.rr, &xx, &yy);
     player->kbody = cpSpaceAddBody(app.space, cpBodyNewKinematic());

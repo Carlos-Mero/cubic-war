@@ -2,11 +2,11 @@
 
 #include <chipmunk.h>
 
-typedef struct object {
-    void (*_process) (void* obj, double delta);
-    void (*_render) (void* obj);
-    void (*_free) (cpSpace* space, void* obj, void* data);
-} object;
+#define OBJECT struct {\
+    void (*_process) (void* obj, double delta);\
+    void (*_render) (void* obj);\
+    void (*_free) (cpSpace* space, void* obj, void* data);\
+};
 
 extern const double RADIUS_TO_DEGREE;
 extern const double DEGREE_TO_RADIUS;

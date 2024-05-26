@@ -60,9 +60,9 @@ void player_default_bullet_deinit() {
 
 PlayerDefaultBullet* player_default_bullet_new(cpVect pos) {
     PlayerDefaultBullet* bullet = malloc(sizeof(PlayerDefaultBullet));
-    bullet->base._process = player_default_bullet_process;
-    bullet->base._render = player_default_bullet_render;
-    bullet->base._free = player_default_bullet_free;
+    bullet->_process = player_default_bullet_process;
+    bullet->_render = player_default_bullet_render;
+    bullet->_free = player_default_bullet_free;
     bullet->existance_duration = 0.0;
 
     bullet->kbody = cpSpaceAddBody(app.space, cpBodyNewKinematic());

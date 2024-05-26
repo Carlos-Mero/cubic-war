@@ -8,7 +8,8 @@
 extern const double player_default_bullet_damage;
 
 typedef struct PlayerDefaultBullet {
-    object base;
+    OBJECT;
+
     cpBody* kbody;
     cpShape* coli_shape;
     double existance_duration;
