@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     if (app_init() < 0) {goto END_CLEANUP;}
 
     #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop_arg(main_loop, nullptr, -1, 1)
+    emscripten_set_main_loop_arg(main_loop, NULL, -1, 1)
     #else
     main_loop();
     #endif

@@ -18,7 +18,7 @@ void bullets_deinit() {
 }
 
 static const double bullets_max_existance = 2.5;
-static SDL_Texture* player_default_bullet_texture = nullptr;
+static SDL_Texture* player_default_bullet_texture = NULL;
 const double player_default_bullet_damage = 12.0;
 static const double player_default_bullet_speed = 1350.0;
 static const int player_default_bullet_length = 40;
@@ -47,7 +47,7 @@ void player_default_bullet_init() {
     };
     int indices[] = {0, 1, 2, 0, 2, 3, 0, 3, 4};
     SDL_RenderGeometry(app.rr,
-                       nullptr,
+                       NULL,
                        vertices,
                        sizeof(vertices) / sizeof(vertices[0]),
                        indices,
@@ -92,7 +92,7 @@ void player_default_bullet_process(void* _bullet, double delta) {
     auto bullet = (PlayerDefaultBullet*)_bullet;
     ((PlayerDefaultBullet*)bullet)->existance_duration += delta;
     if (((PlayerDefaultBullet*)bullet)->existance_duration > bullets_max_existance) {
-        cpSpaceAddPostStepCallback(app.space, player_default_bullet_free, bullet, nullptr);
+        cpSpaceAddPostStepCallback(app.space, player_default_bullet_free, bullet, NULL);
     }
 }
 

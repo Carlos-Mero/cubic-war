@@ -10,16 +10,16 @@
 // global objects
 App app = {
     .running = true,
-    .window = nullptr,
-    .rr = nullptr,
-    .screen = nullptr,
+    .window = NULL,
+    .rr = NULL,
+    .screen = NULL,
     .window_size = {0, 0, 800, 480},
     .DPI_SCALE = 0.0,
     .rtime = {.tv_sec = 0, .tv_nsec = 0},
 
-    .space = nullptr,
+    .space = NULL,
 
-    .player = nullptr,
+    .player = NULL,
 };
 
 static const SDL_Color main_bkg_color = {0xbd, 0xd0, 0xf1, 0xff};
@@ -37,7 +37,7 @@ int app_init() {
     app.rr = SDL_CreateRenderer(app.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     SDL_SetRenderDrawBlendMode(app.rr, SDL_BLENDMODE_BLEND);
     int actual_width;
-    SDL_GetRendererOutputSize(app.rr, &actual_width, nullptr);
+    SDL_GetRendererOutputSize(app.rr, &actual_width, NULL);
     app.DPI_SCALE = (double)actual_width / (double)app.window_size.w;
 
     // initialize chipmunk
@@ -73,7 +73,7 @@ static void main_render_process() {
     SDL_RenderClear(app.rr);
 
     // render subsequent objects
-    cpSpaceEachBody(app.space, render_callback, nullptr);
+    cpSpaceEachBody(app.space, render_callback, NULL);
 
     // Final render present
     SDL_RenderPresent(app.rr);
@@ -121,13 +121,13 @@ void main_process() {
 static void cleanup_callback(cpBody* body, void* data) {
     auto obj = (object*)(cpBodyGetUserData(body));
     if (obj->_free) {
-        cpSpaceAddPostStepCallback(app.space, obj->_free, obj, nullptr);
+        cpSpaceAddPostStepCallback(app.space, obj->_free, obj, NULL);
     }
 }
 
 void final_cleanup() {
     // collect objects
-    cpSpaceEachBody(app.space, cleanup_callback, nullptr);
+    cpSpaceEachBody(app.space, cleanup_callback, NULL);
 
     // deinit globals
     bullets_deinit();

@@ -73,8 +73,8 @@ void _process_player(void* _player, double delta) {
     cpBodySetAngle(player->kbody, atan2(pspeed.x, pspeed.y));
 
     // attack
-    if (SDL_GetMouseState(nullptr, nullptr) == 1) {
-        cpSpaceAddPostStepCallback(app.space, player->weapon_attack, player, nullptr);
+    if (SDL_GetMouseState(NULL, NULL) == 1) {
+        cpSpaceAddPostStepCallback(app.space, player->weapon_attack, player, NULL);
     }
 }
 
